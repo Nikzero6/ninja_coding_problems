@@ -5,6 +5,7 @@
         "string": "cpp",
         "vector": "cpp",
         "unordered_map": "cpp",
-        "iostream": "cpp"
+        "iostream": "cpp",
+        "new": "cpp"
     }
 }
