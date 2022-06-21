@@ -12,6 +12,16 @@ int unique(int a[], int n)
 
     return -1;
 }
+int xor_unique(int a[], int n)
+{
+    int ans = a[0];
+    for (int i = 1; i < n; i++)
+    {
+        ans = ans ^ a[i];
+    }
+
+    return ans;
+}
 int main()
 {
     int n;
@@ -20,6 +30,6 @@ int main()
     for (int i = 0; i < n; i++)
         cin >> a[i];
 
-    cout << unique(a, n) << endl;
+    cout << xor_unique(a, n) << endl;
     return 0;
 }

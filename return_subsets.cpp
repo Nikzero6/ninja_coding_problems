@@ -3,7 +3,7 @@ using namespace std;
 #include <vector>
 
 void return_subsets(int a[], vector<vector<int>> &ds, vector<int> ans, int i, int size)
-{   
+{
     if (i == size)
     {
         ds.push_back(ans);
