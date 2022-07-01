@@ -7,6 +7,7 @@ public:
     int *degCoeff;
     int capacity;
 
+    //default constructor
     Polynomial()
     {
         degCoeff = new int[5];
@@ -17,6 +18,7 @@ public:
         capacity = 5;
     }
 
+    // parametrized constructor
     Polynomial(int capacity)
     {
         degCoeff = new int[capacity];
@@ -27,6 +29,7 @@ public:
         this->capacity = capacity;
     }
 
+    // copy constructor
     Polynomial(Polynomial const &p)
     {
         delete[] degCoeff;
@@ -38,6 +41,7 @@ public:
         }
     }
 
+    // copy assignment (operator overloading)
     void operator=(Polynomial const &p)
     {
         delete[] degCoeff;
@@ -49,6 +53,7 @@ public:
         }
     }
 
+    // method
     void setCoefficient(int deg, int coeff)
     {
         if (deg >= capacity)
@@ -65,6 +70,7 @@ public:
         degCoeff[deg] = coeff;
     }
 
+    // operator overloading
     Polynomial operator+(Polynomial const &p)
     {
         Polynomial result;
@@ -90,6 +96,7 @@ public:
         return result;
     }
 
+    // operator overloading
     Polynomial operator-(Polynomial const &p)
     {
         int maxCapacity = max(capacity, p.capacity);
@@ -109,6 +116,7 @@ public:
         return result;
     }
 
+    // operator overloading
     Polynomial operator*(Polynomial const &p)
     {
         Polynomial result(capacity + p.capacity);
@@ -130,6 +138,7 @@ public:
         return result;
     }
 
+    // method
     void print()
     {
         for (int i = 0; i < capacity; i++)
