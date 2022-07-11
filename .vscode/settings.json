@@ -1,6 +1,11 @@
 {
     "files.associations": {
         "*.ejs": "html",
-        "stack": "cpp"
+        "stack": "cpp",
+        "iostream": "cpp",
+        "array": "cpp",
+        "vector": "cpp",
+        "string": "cpp",
+        "string_view": "cpp"
     }
 }
