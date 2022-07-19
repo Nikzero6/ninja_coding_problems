@@ -27,6 +27,7 @@ bool check_AB(string s, char prev)
     else
         return false;
 }
+
 int main()
 {
     string s;
