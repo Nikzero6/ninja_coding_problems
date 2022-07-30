@@ -5,6 +5,206 @@
 #include <unordered_map>
 using namespace std;
 
+/*------------------- smallest uncommon subsequence -----------------------*/
+
+int sus_memo(string s, string t, vector<vector<int>> &memo)
+{
+    int m = s.size(), n = t.size();
+
+    if (m == 0)
+        return 1005;
+
+    if (n == 0)
+        return 1;
+
+    if (memo[m][n] == -1)
+    {
+        int k = 0;
+        while (k < n)
+        {
+            if (t[k] == s[0])
+                break;
+
+            k++;
+        }
+
+        if (k == n)
+            return 1;
+
+        memo[m][n] = min(sus_memo(s.substr(1), t, memo), 1 + sus_memo(s.substr(1), t.substr(k + 1), memo));
+    }
+
+    return memo[m][n];
+}
+
+int sus_dp(string s, string t)
+{
+    int m = s.size(), n = t.size();
+
+    vector<vector<int>> dp(m + 1, vector<int>(n + 1, 1001));
+    for (int i = 1; i < n; i++)
+        dp[i][0] = 1;
+
+    for (int i = 1; i <= m; i++)
+    {
+        for (int j = 1; j <= n; j++)
+        {
+            char c = s[i - 1];
+            int k;
+            for (k = j - 1; j >= 0; j--)
+                if (t[k] == c)
+                    break;
+
+            if (k == -1)
+                dp[i][j] = 1;
+            else
+                dp[i][j] = min(dp[i - 1][j], 1 + dp[i - 1][k]);
+        }
+    }
+
+    return dp[m][n];
+}
+
+/*------------------- max square submatrix -----------------------*/
+
+int max_square(vector<vector<int>> a)
+{
+    int m = a.size(), n = a[0].size();
+    vector<vector<int>> dp(m, vector<int>(n));
+
+    int ans = INT_MIN;
+
+    for (int i = 0; i < n; i++)
+    {
+        dp[0][i] = a[0][i] ^ 1;
+        ans = max(ans, dp[0][i]);
+    }
+
+    for (int i = 1; i < m; i++)
+    {
+        dp[i][0] = a[i][0] ^ 1;
+        ans = max(ans, dp[i][0]);
+    }
+
+    for (int i = 1; i < m; i++)
+    {
+        for (int j = 1; j < n; j++)
+        {
+            if (a[i][j] == 1)
+                dp[i][j] = 0;
+            else
+                dp[i][j] = min(dp[i - 1][j], min(dp[i][j - 1], dp[i - 1][j - 1])) + 1;
+
+            ans = max(ans, dp[i][j]);
+        }
+    }
+
+    return ans;
+}
+
+/*------------------- Coin tower -----------------------*/
+
+// memoization
+bool coin_tower_helper(int n, int x, int y, vector<int> &memo)
+{
+    if (n == 0)
+        return true;
+
+    if (memo[n] == -1)
+    {
+        bool a = false, b = false, c = false;
+
+        if (n - 1 >= 0)
+            a = coin_tower_helper(n - 1, x, y, memo);
+        if (n - x >= 0)
+            b = coin_tower_helper(n - x, x, y, memo);
+        if (n - y >= 0)
+            c = coin_tower_helper(n - y, x, y, memo);
+
+        memo[n] = a || b || c;
+    }
+
+    return !memo[n];
+}
+
+string coint_tower(int n, int x, int y)
+{
+    vector<int> memo(n + 1, -1);
+
+    if (coin_tower_helper(n, x, y, memo))
+        return "whis";
+    else
+        return "beerus";
+}
+
+// tabulation
+bool coin_tower_dp(int n, int x, int y)
+{
+    vector<bool> dp(n + 1, false);
+
+    for (int i = 1; i <= n; i++)
+    {
+        if (i - 1 >= 0)
+            dp[i] = dp[i] || !dp[i - 1];
+        if (i - x >= 0)
+            dp[i] = dp[i] || !dp[i - x];
+        if (i - y >= 0)
+            dp[i] = dp[i] || !dp[i - y];
+    }
+
+    return dp[n];
+}
+
+/*------------------- matrix chain multiplication -----------------------*/
+
+int mcm(vector<int> a, int s, int e, vector<vector<int>> &memo)
+{
+    int n = a.size();
+
+    if (s == e - 1)
+        return 0;
+
+    if (memo[s][e] == INT_MAX)
+    {
+        for (int k = s + 1; k < e; k++)
+        {
+            int x = mcm(a, s, k, memo) + mcm(a, k, e, memo) + a[s] * a[k] * a[e];
+            memo[s][e] = min(memo[s][e], x);
+        }
+    }
+
+    return memo[s][e];
+}
+
+int mcm_dp(vector<int> a)
+{
+    int n = a.size();
+    vector<vector<int>> dp(n, vector<int>(n + 1, INT_MAX));
+
+    for (int i = 0; i < n; i++)
+    {
+        for (int j = 0; j <= i + 1; j++)
+            dp[i][j] = 0;
+    }
+
+    int i = 0, j = 2;
+
+    while (i != 0 || j <= n)
+    {
+        i = 0;
+        int k = j;
+
+        while (k < n)
+        {
+            dp[i][k] = min(dp[i][k], dp[i][k - 1] + dp[k - 1][k] + a[i] * a[k - 1] * a[k]);
+            i++, k++;
+        }
+        j++;
+    }
+
+    return dp[0][n - 1];
+}
+
 /*------------------- infinite coin change -----------------------*/
 
 int coin_change_memo(vector<int> coins, int value, int i, vector<vector<int>> &memo)
@@ -339,7 +539,7 @@ int lcs_dp(string s, string t)
     }
 
     return dp[m][n];
-}   
+}
 
 /*------------------- min cost path -----------------------*/
 
@@ -674,17 +874,58 @@ int main()
     // cout << all_possible_ways_memo(a, b, 1, memo) << endl;
 
     /*------------------- infinite coin change -----------------------*/
-    int n;
-    cin >> n;
-    vector<int> a(n);
-    for (int i = 0; i < n; i++)
-        cin >> a[i];
+    // int n;
+    // cin >> n;
+    // vector<int> a(n);
+    // for (int i = 0; i < n; i++)
+    //     cin >> a[i];
 
-    int v;
-    cin >> v;
-    vector<vector<int>> memo(v + 1, vector<int>(n, -1));
-    cout << coin_change_memo(a, v, 0, memo) << endl;
-    cout << coin_change_dp(a, v) << endl;
+    // int v;
+    // cin >> v;
+    // vector<vector<int>> memo(v + 1, vector<int>(n, -1));
+    // cout << coin_change_memo(a, v, 0, memo) << endl;
+    // cout << coin_change_dp(a, v) << endl;
+
+    /*------------------- matrix chain multiplication -----------------------*/
+    // int n;
+    // cin >> n;
+    // vector<int> a(n + 1);
+    // for (int i = 0; i <= n; i++)
+    //     cin >> a[i];
+
+    // vector<vector<int>> memo(n + 1, vector<int>(n + 1, INT_MAX));
+    // cout << mcm(a, 0, n, memo) << endl;
+    // cout << mcm_dp(a) << endl;
+
+    /*------------------- Coin tower -----------------------*/
+    // int n, x, y;
+    // cin >> n >> x >> y;
+    // cout << coint_tower(n, x, y) << endl;
+    // cout << coin_tower_dp(n, x, y) << endl;
+
+    /*------------------- max square submatrix -----------------------*/
+    // int m, n;
+    // cin >> m >> n;
+    // vector<vector<int>> a;
+
+    // for (int i = 0; i < m; i++)
+    // {
+    //     vector<int> b(n);
+    //     for (int j = 0; j < n; j++)
+    //         cin >> b[j];
+
+    //     a.push_back(b);
+    // }
+
+    // cout << max_square(a) << endl;
+
+    /*------------------- smallest uncommon subsequence -----------------------*/
+
+    string s, t;
+    cin >> s >> t;
+    vector<vector<int>> memo(s.size() + 1, vector<int>(t.size() + 1, -1));
+    cout << sus_memo(s, t, memo) << endl;
+    cout << sus_dp(s, t) << endl;
 
     return 0;
 }
