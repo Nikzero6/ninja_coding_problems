@@ -649,6 +649,94 @@ pair<bool, int> printNodesK(TreeNode<int> *root, int target, int k)
     return {false, k};
 }
 
+class QNode
+{
+public:
+    TreeNode<int> *node;
+    int row, col;
+
+    QNode()
+    {
+        node = NULL;
+        row = 0, col = 0;
+    }
+    QNode(TreeNode<int> *node, int row, int col)
+    {
+        this->node = node;
+        this->row = row;
+        this->col = col;
+    }
+};
+
+int minCol = 0, maxCol = 0;
+
+void dfs(TreeNode<int> *root, int row, int col)
+{
+    if (root == NULL)
+        return;
+
+    minCol = min(minCol, col);
+    maxCol = max(maxCol, col);
+
+    dfs(root->left, row + 1, col - 1);
+    dfs(root->right, row + 1, col + 1);
+}
+
+void bfs(TreeNode<int> *root, vector<vector<int>> &ans)
+{
+    if (root == NULL)
+        return;
+
+    queue<QNode> q;
+    q.push(QNode(root, 0, -minCol));
+    int prevRow = 0, n = maxCol - minCol + 1;
+    vector<vector<int>> smallAns(n);
+
+    while (!q.empty())
+    {
+        QNode node = q.front();
+        q.pop();
+
+        if (prevRow != node.row)
+        {
+            for (int i = 0; i < n; i++)
+            {
+                sort(smallAns[i].begin(), smallAns[i].end());
+                ans[i].insert(ans[i].end(), smallAns[i].begin(), smallAns[i].end());
+                smallAns[i].clear();
+            }
+        }
+        prevRow = node.row;
+        smallAns[node.col].push_back(node.node->data);
+
+        if (node.node->left != NULL)
+        {
+            q.push(QNode(node.node->left, node.row + 1, node.col - 1));
+        }
+
+        if (node.node->right != NULL)
+        {
+            q.push(QNode(node.node->right, node.row + 1, node.col + 1));
+        }
+    }
+
+    for (int i = 0; i < n; i++)
+    {
+        sort(smallAns[i].begin(), smallAns[i].end());
+        ans[i].insert(ans[i].end(), smallAns[i].begin(), smallAns[i].end());
+    }
+}
+
+vector<vector<int>> verticalTraversal(TreeNode<int> *root)
+{
+    dfs(root, 0, 0);
+    int n = maxCol - minCol + 1;
+    vector<vector<int>> ans(n);
+    bfs(root, ans);
+
+    return ans;
+}
+
 // 1 2 3 4 5 6 -1 7 -1 8 -1 -1 -1 -1 -1 -1 -1
 
 //           1
@@ -774,9 +862,19 @@ int main()
     //     cout << endl;
     // }
 
-    int target, k;
-    cin >> target >> k;
-    printNodesK(root, target, k);
+    // int target, k;
+    // cin >> target >> k;
+    // printNodesK(root, target, k);
+
+    vector<vector<int>> ans = verticalTraversal(root);
+    for (auto it : ans)
+    {
+        for (auto vec : it)
+        {
+            cout << vec << " ";
+        }
+        cout << endl;
+    }
 
     return 0;
 }
