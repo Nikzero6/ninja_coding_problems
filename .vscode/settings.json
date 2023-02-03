@@ -1,6 +1,7 @@
 {
     "files.associations": {
         "*.ejs": "html",
+        "*.html.erb": "erb",
         "stack": "cpp",
         "iostream": "cpp",
         "array": "cpp",
@@ -9,6 +10,7 @@
         "string_view": "cpp",
         "chrono": "cpp",
         "unordered_map": "cpp",
-        "queue": "cpp"
+        "queue": "cpp",
+        "ostream": "cpp"
     }
 }
