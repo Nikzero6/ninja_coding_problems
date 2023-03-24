@@ -1,53 +1,74 @@
 #include <iostream>
 #include <vector>
+#include <unordered_map>
+#include <map>
+#define itr map<int, int>::iterator
 using namespace std;
 
-int pos[10001];
-
-int solve(vector<int> a, int n, int m, int d)
+int maximizeWin(vector<int> &a, int k)
 {
-    int ans = INT_MAX;
+    unordered_map<int, int> freq;
+    map<int, int> pre;
+    pre[a[0]] = 0;
 
-    for (int i = 0; i < m - 1; i++)
+    int count = 1, sum = 0, i = 1;
+    for (; i < a.size(); i++)
     {
-        if (pos[a[i]] >= pos[a[i + 1]] || pos[a[i]] + d < pos[a[i + 1]])
-            return 0;
-
-        int move1 = pos[a[i + 1]] - pos[a[i]];
-        int move2 = pos[a[i]] + d - pos[a[i + 1]] + 1;
-        int posb_shifts = n - pos[a[i + 1]] + pos[a[i]] - 1;
-
-        if (move2 < move1 && posb_shifts >= move2)
-            ans = min(ans, move2);
+        if (a[i] == a[i - 1])
+            count++;
         else
-            ans = min(ans, move1);
+        {
+            freq[a[i - 1]] = count;
+            sum += count;
+            pre[a[i]] = sum;
+            count = 1;
+        }
+    }
+    freq[a[i - 1]] = count;
+
+    itr start = pre.begin();
+    int max1 = 0, max2 = 0;
+
+    while (start != pre.end())
+    {
+        itr end = --pre.upper_bound(start->first + k);
+
+        int count = 0;
+
+        if (end != start)
+            count = end->second - start->second + freq[end->first];
+        else
+            count = freq[end->first];
+
+        if (count > max1)
+        {
+            max2 = max1;
+            max1 = count;
+        }
+        else if (count > max2)
+        {
+            max2 = count;
+        }
+
+        start = ++end;
     }
 
-    return ans;
+    return max1 + max2;
 }
 
 int main()
 {
-    int t;
-    cin >> t;
+    freopen("input.txt", "r", stdin);
 
-    while (t)
-    {
-        int n, m, d;
-        cin >> n >> m >> d;
+    int n, k;
+    cin >> n >> k;
+    vector<int> a(n);
 
-        for (int i = 0; i < n; i++)
-        {
-            int x;
-            cin >> x;
-            pos[x] = i;
-        }
+    for (int i = 0; i < n; i++)
+        cin >> a[i];
 
-        vector<int> a(m);
-        for (int i = 0; i < m; i++)
-            cin >> a[i];
+    cout
+        << maximizeWin(a, k) << endl;
 
-        cout << solve(a, n, m, d) << endl;
-        t--;
-    }
+    return 0;
 }

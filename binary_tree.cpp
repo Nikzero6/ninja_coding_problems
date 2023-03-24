@@ -2,6 +2,8 @@
 #include <queue>
 #include <stack>
 #include <unordered_map>
+#include <climits>
+#include <algorithm>
 using namespace std;
 
 template <typename T>
@@ -737,6 +739,51 @@ vector<vector<int>> verticalTraversal(TreeNode<int> *root)
     return ans;
 }
 
+vector<vector<int>> zigzagLevelOrder(TreeNode<int> *root)
+{
+    queue<TreeNode<int> *> q;
+    q.push(root);
+    q.push(NULL);
+    vector<vector<int>> ans;
+    vector<int> temp;
+    int level = 0;
+
+    while (!q.empty())
+    {
+        TreeNode<int> *node = q.front();
+        q.pop();
+
+        if (node == NULL)
+        {
+            if (level % 2)
+                reverse(temp.begin(), temp.end());
+
+            ans.push_back(temp);
+            temp.clear();
+
+            if (!q.empty())
+            {
+                level++;
+                q.push(NULL);
+            }
+
+            continue;
+        }
+
+        temp.push_back(node->data);
+
+        TreeNode<int> *left = node->left;
+        TreeNode<int> *right = node->right;
+
+        if (left)
+            q.push(left);
+        if (right)
+            q.push(right);
+    }
+
+    return ans;
+}
+
 // 1 2 3 4 5 6 -1 7 -1 8 -1 -1 -1 -1 -1 -1 -1
 
 //           1
@@ -749,6 +796,16 @@ int main()
     TreeNode<int> *root = takeInputLevelWise();
     cout << endl
          << endl;
+
+    vector<vector<int>> ans = zigzagLevelOrder(root);
+    for (auto it : ans)
+    {
+        for (auto vec : it)
+        {
+            cout << vec << " ";
+        }
+        cout << endl;
+    }
 
     // printLevelWise(root);
 
@@ -866,15 +923,15 @@ int main()
     // cin >> target >> k;
     // printNodesK(root, target, k);
 
-    vector<vector<int>> ans = verticalTraversal(root);
-    for (auto it : ans)
-    {
-        for (auto vec : it)
-        {
-            cout << vec << " ";
-        }
-        cout << endl;
-    }
+    // vector<vector<int>> ans = verticalTraversal(root);
+    // for (auto it : ans)
+    // {
+    //     for (auto vec : it)
+    //     {
+    //         cout << vec << " ";
+    //     }
+    //     cout << endl;
+    // }
 
     return 0;
 }
